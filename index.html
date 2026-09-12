@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Periodic Table & Chemistry Database | IUPAC Reference</title>
+    <meta name="description" content="Academic, scientific PWA featuring an interactive Periodic Table, 3D molecular visualization, IUPAC data, and compound database." />
+    <meta property="og:title" content="Periodic Table & Chemistry Database" />
+    <meta property="og:description" content="Academic, scientific PWA featuring an interactive Periodic Table, 3D molecular visualization, IUPAC data, and compound database." />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#0b0f19" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ChemTable" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- Optional 3Dmol.js for compounds with automated offline fallback -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.4.2/3Dmol-min.js" defer></script>
+  </head>
+  <body class="bg-[#070a12] text-slate-100 antialiased min-h-screen flex flex-col">
+    <!-- Accessible Live Region for Screen Readers -->
+    <div id="a11yLiveRegion" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Top Scientific App Bar -->
+    <header class="navbar px-4 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 bg-[#0c1222]/90 sticky top-0 z-40">
+      <div class="flex items-center gap-4">
+        <a href="#/" class="flex items-center gap-3 no-underline text-inherit group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 border border-cyan-500/40 flex items-center justify-center p-1.5 shadow-lg shadow-cyan-950/40 group-hover:border-cyan-400 transition-all">
+            <svg class="w-full h-full text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" fill="currentColor"/>
+              <ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(30 12 12)"/>
+              <ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(-30 12 12)"/>
+              <ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(90 12 12)"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-base font-bold tracking-tight text-white m-0">IUPAC Periodic Table</span>
+              <span class="text-[10px] font-mono uppercase bg-cyan-950/80 text-cyan-300 border border-cyan-800/60 px-1.5 py-0.5 rounded">SPA Offline</span>
+            </div>
+            <p class="text-xs text-slate-400 m-0 hidden sm:block">Academic Chemistry & Algorithmic Structures</p>
+          </div>
+        </a>
+
+        <!-- Main SPA Navigation Links -->
+        <nav class="hidden md:flex items-center gap-1 text-xs font-semibold pl-2 border-l border-slate-800">
+          <a href="#/" id="navTabTable" class="nav-link active px-3 py-1.5 rounded-lg hover:bg-slate-800/60 no-underline">
+            🧪 Periodic Table
+          </a>
+          <a href="#/archive/organic" id="navTabOrganic" class="nav-link px-3 py-1.5 rounded-lg hover:bg-slate-800/60 no-underline">
+            🌿 Organic Archive
+          </a>
+          <a href="#/archive/inorganic" id="navTabInorganic" class="nav-link px-3 py-1.5 rounded-lg hover:bg-slate-800/60 no-underline">
+            💎 Inorganic Archive
+          </a>
+        </nav>
+      </div>
+
+      <!-- Live Search & Filtering Toolbar -->
+      <div class="flex flex-1 max-w-md items-center gap-2">
+        <div class="relative w-full">
+          <input 
+            type="text" 
+            id="searchInput"
+            placeholder="Search element (e.g. C, 6, Carbon, Gold)..." 
+            class="w-full bg-slate-900/90 text-sm text-slate-200 placeholder-slate-500 border border-slate-700/80 rounded-lg pl-9 pr-8 py-2 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" stroke-width="2"/>
+            <path stroke-linecap="round" stroke-width="2" d="m21 21-4.35-4.35"/>
+          </svg>
+          <button id="clearSearchBtn" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-white text-xs bg-slate-800 px-1.5 py-0.5 rounded">✕</button>
+        </div>
+      </div>
+
+      <!-- Actions & PWA Controls -->
+      <div class="flex items-center gap-2.5">
+        <!-- Quick Element Shortcuts -->
+        <a href="#/element/6" class="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition no-underline">
+          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+          Carbon (C)
+        </a>
+        <a href="#/element/11" class="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition no-underline">
+          <span class="w-2 h-2 rounded-full bg-red-400"></span>
+          Sodium (Na)
+        </a>
+
+        <!-- Install PWA Button -->
+        <button id="pwaInstallBtn" class="hidden items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 px-3 py-1.5 text-xs font-semibold text-white shadow-md shadow-cyan-950/50 transition active:scale-95 cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Install App
+        </button>
+
+        <!-- Offline Status Indicator -->
+        <div id="offlineIndicator" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium" title="Application is 100% offline-ready">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          100% Offline
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Navigation Sub-Bar -->
+    <div class="md:hidden flex items-center justify-around bg-[#0a0f1d] border-b border-slate-800 px-2 py-2 text-xs font-medium">
+      <a href="#/" id="mobNavTabTable" class="text-cyan-400 no-underline px-2 py-1">🧪 Periodic Table</a>
+      <a href="#/archive/organic" id="mobNavTabOrganic" class="text-slate-400 no-underline px-2 py-1">🌿 Organic</a>
+      <a href="#/archive/inorganic" id="mobNavTabInorganic" class="text-slate-400 no-underline px-2 py-1">💎 Inorganic</a>
+    </div>
+
+    <!-- SPA VIEW 1: INTERACTIVE PERIODIC TABLE -->
+    <div id="viewTable" class="spa-view flex-1 flex flex-col">
+      <!-- Interactive Controls Bar (Filters, Temperature, Heatmap) -->
+      <section class="bg-[#0b101e] border-b border-slate-800/80 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+          <!-- Filter Controls -->
+          <div class="flex flex-wrap items-center gap-3 text-xs">
+            <!-- State Filter -->
+            <div class="flex items-center gap-1 bg-slate-900/90 border border-slate-800 p-1 rounded-lg">
+              <span class="text-slate-400 px-1.5 font-medium">State:</span>
+              <button data-state="all" class="filter-state-btn px-2.5 py-1 rounded font-medium bg-cyan-600 text-white transition">All</button>
+              <button data-state="solid" class="filter-state-btn px-2.5 py-1 rounded font-medium text-slate-300 hover:bg-slate-800 transition">Solid</button>
+              <button data-state="liquid" class="filter-state-btn px-2.5 py-1 rounded font-medium text-slate-300 hover:bg-slate-800 transition">Liquid</button>
+              <button data-state="gas" class="filter-state-btn px-2.5 py-1 rounded font-medium text-slate-300 hover:bg-slate-800 transition">Gas</button>
+            </div>
+
+            <!-- Block Filter -->
+            <div class="flex items-center gap-1 bg-slate-900/90 border border-slate-800 p-1 rounded-lg">
+              <span class="text-slate-400 px-1.5 font-medium">Block:</span>
+              <button data-block="all" class="filter-block-btn px-2 py-1 rounded font-medium bg-cyan-600 text-white transition">All</button>
+              <button data-block="s" class="filter-block-btn px-2 py-1 rounded font-medium text-slate-300 hover:bg-slate-800 transition">s</button>
+              <button data-block="p" class="filter-block-btn px-2 py-1 rounded font-medium text-slate-300 hover:bg-slate-800 transition">p</button>
+              <button data-block="d" class="filter-block-btn px-2 py-1 rounded font-medium text-slate-300 hover:bg-slate-800 transition">d</button>
+              <button data-block="f" class="filter-block-btn px-2 py-1 rounded font-medium text-slate-300 hover:bg-slate-800 transition">f</button>
+            </div>
+
+            <!-- Radioactivity Toggle -->
+            <label class="flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg cursor-pointer hover:border-slate-700 transition">
+              <input type="checkbox" id="radioactiveFilter" class="accent-cyan-500 rounded" />
+              <span class="text-slate-300 font-medium">☢ Radioactive Only</span>
+            </label>
+          </div>
+
+          <!-- Analytical Property Heatmap Mode -->
+          <div class="flex flex-wrap items-center gap-3 text-xs">
+            <div class="flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg">
+              <span class="text-slate-400 font-medium">Property Heatmap:</span>
+              <select id="heatmapSelect" class="bg-transparent text-cyan-300 font-semibold focus:outline-none cursor-pointer">
+                <option value="none">Standard Chemical Series</option>
+                <option value="electronegativity">Electronegativity (Pauling)</option>
+                <option value="atomic_mass">Standard Atomic Weight</option>
+                <option value="atomic_radius_pm">Atomic Radius (pm)</option>
+                <option value="ionization">1st Ionization Energy (kJ/mol)</option>
+                <option value="melting_point_k">Melting Point (K)</option>
+                <option value="density">Density (g/cm³)</option>
+              </select>
+            </div>
+
+            <!-- Dynamic Temperature Simulator Slider -->
+            <div class="flex items-center gap-2.5 bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg">
+              <div class="flex items-center gap-1.5">
+                <span class="text-slate-400 font-medium">Temp:</span>
+                <span id="tempDisplay" class="font-mono font-bold text-cyan-300">298 K (25°C)</span>
+              </div>
+              <input 
+                type="range" 
+                id="tempSlider" 
+                min="0" 
+                max="6000" 
+                step="25" 
+                value="298" 
+                class="w-28 accent-cyan-400 cursor-ew-resize"
+                title="Simulate element physical state at given temperature"
+              />
+              <button id="resetTempBtn" class="text-slate-400 hover:text-white px-1 font-mono text-[10px]" title="Reset to STP 298 K">STP</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Periodic Table Area -->
+      <main class="flex-1 p-4 lg:p-6 flex flex-col items-center">
+        <h1 id="headingTable" tabindex="-1" class="sr-only">Interactive Periodic Table of the Elements</h1>
+        <div class="w-full max-w-[1520px]">
+          <!-- Search Results Count Banner (when active) -->
+          <div id="filterBanner" class="hidden mb-3 px-4 py-2 bg-cyan-950/40 border border-cyan-800/40 rounded-lg text-xs text-cyan-300 flex items-center justify-between">
+            <span id="filterBannerText">Showing 118 of 118 elements</span>
+            <button id="resetAllFiltersBtn" class="underline hover:text-white cursor-pointer">Reset Filters</button>
+          </div>
+
+          <!-- Heatmap Gradient Legend (when active) -->
+          <div id="heatmapLegend" class="hidden mb-3 px-4 py-2 bg-slate-900/80 border border-slate-800 rounded-lg text-xs flex items-center justify-between">
+            <span id="heatmapMinLabel" class="font-mono text-slate-400">Min: 0</span>
+            <div class="flex-1 mx-4 h-2 rounded bg-gradient-to-r from-blue-900 via-cyan-500 to-amber-400"></div>
+            <span id="heatmapMaxLabel" class="font-mono text-amber-400">Max: 100</span>
+          </div>
+
+          <!-- Periodic Table Scrollable Wrapper -->
+          <div class="periodic-table-wrapper rounded-xl border border-slate-800/80 bg-[#090e1c] p-4 shadow-2xl">
+            <div id="periodicGrid" class="periodic-table-grid">
+              <!-- Dynamically populated by app.js -->
+            </div>
+          </div>
+
+          <!-- Chemical Series Legend -->
+          <div class="mt-5 p-3.5 bg-slate-900/60 border border-slate-800/80 rounded-xl">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">IUPAC Chemical Series (Click to highlight)</span>
+              <span class="text-xs text-slate-500">Total: 118 Elements • Offline-First SPA</span>
+            </div>
+            <div id="seriesLegendBar" class="flex flex-wrap gap-2 text-xs">
+              <!-- Dynamically populated with interactive toggle counts -->
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Quick Element Inspector Drawer / Hover Bar -->
+      <aside id="inspectorDrawer" class="inspector-card fixed bottom-4 right-4 max-w-sm w-full z-30 p-4 border-cyan-500/30 hidden">
+        <div class="flex items-start justify-between gap-3 pb-3 border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <div id="insTile" class="w-12 h-12 rounded-lg bg-slate-800 border border-cyan-500/50 flex flex-col items-center justify-center font-mono">
+              <span id="insNum" class="text-[10px] text-slate-400">6</span>
+              <span id="insSym" class="text-lg font-extrabold text-cyan-300 leading-none">C</span>
+            </div>
+            <div>
+              <h4 id="insName" class="text-sm font-bold text-white m-0">Carbon</h4>
+              <span id="insCategory" class="text-[11px] text-cyan-400 block font-medium">Reactive nonmetal</span>
+            </div>
+          </div>
+          <button id="closeInspectorBtn" class="text-slate-400 hover:text-white text-sm p-1">✕</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 text-xs py-2.5 font-mono text-slate-300">
+          <div>Atomic Weight: <strong id="insWeight" class="text-white">12.011</strong></div>
+          <div>Electronegativity: <strong id="insEneg" class="text-white">2.55</strong></div>
+          <div class="col-span-2">Configuration: <strong id="insConfig" class="text-cyan-300 font-mono text-[11px]">[He] 2s² 2p²</strong></div>
+          <div>State at STP: <strong id="insState" class="text-white">Solid</strong></div>
+          <div>Block: <strong id="insBlock" class="text-white">p-block</strong></div>
+        </div>
+
+        <a id="insDetailLink" href="#/element/6" class="mt-2 w-full py-2 px-3 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs text-center block transition shadow-md shadow-cyan-950/60 no-underline">
+          Open Full Academic Dossier →
+        </a>
+      </aside>
+    </div>
+
+    <!-- SPA VIEW 2: DETAILED ELEMENT DOSSIER & ALGORITHMIC STRUCTURES -->
+    <div id="viewDossier" class="spa-view hidden flex-1 p-4 lg:p-8 max-w-7xl mx-auto w-full space-y-8">
+      <h1 id="headingDossier" tabindex="-1" class="sr-only">Element Academic Dossier</h1>
+      <!-- Dossier Sub-Nav Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <a href="#/" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700/80 transition no-underline">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Table Grid
+          </a>
+          <span class="text-slate-600">|</span>
+          <div class="flex items-center gap-1">
+            <a id="dossierPrevBtn" href="#/element/1" class="px-2.5 py-1 text-xs rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 transition no-underline">← Prev</a>
+            <a id="dossierNextBtn" href="#/element/2" class="px-2.5 py-1 text-xs rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 transition no-underline">Next →</a>
+          </div>
+        </div>
+
+        <div id="dossierBreadcrumb" class="font-mono text-xs font-semibold text-cyan-400">
+          Loading Element...
+        </div>
+
+        <button onclick="window.print()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs border border-slate-700 transition">
+          🖨 Print Dossier
+        </button>
+      </div>
+
+      <!-- Dossier Dynamic Mount Container -->
+      <div id="dossierContent" class="space-y-8">
+        <!-- Rendered by app.js on route change -->
+      </div>
+    </div>
+
+    <!-- SPA VIEW 3: ORGANIC CHEMISTRY ARCHIVE -->
+    <div id="viewArchiveOrganic" class="spa-view hidden flex-1 p-4 lg:p-8 max-w-7xl mx-auto w-full space-y-8">
+      <!-- Archive Header -->
+      <div class="pb-4 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800/60 uppercase tracking-wider">Educational Archive</span>
+            <span class="text-xs text-slate-500">• IUPAC Reference</span>
+          </div>
+          <h1 id="headingOrganic" tabindex="-1" class="text-2xl font-bold text-white tracking-tight">Organic Chemistry Encyclopedia</h1>
+          <p class="text-xs text-slate-400 mt-1">Systematic IUPAC nomenclature, functional group taxonomy, orbital hybridization, and reaction mechanisms.</p>
+        </div>
+        <a href="#/" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition no-underline">
+          ← Back to Table
+        </a>
+      </div>
+
+      <div id="organicArchiveContent" class="space-y-8">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+
+    <!-- SPA VIEW 4: INORGANIC CHEMISTRY ARCHIVE -->
+    <div id="viewArchiveInorganic" class="spa-view hidden flex-1 p-4 lg:p-8 max-w-7xl mx-auto w-full space-y-8">
+      <!-- Archive Header -->
+      <div class="pb-4 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-indigo-950 text-indigo-300 border border-indigo-800/60 uppercase tracking-wider">Educational Archive</span>
+            <span class="text-xs text-slate-500">• Structural Reference</span>
+          </div>
+          <h1 id="headingInorganic" tabindex="-1" class="text-2xl font-bold text-white tracking-tight">Inorganic & Solid-State Chemistry Encyclopedia</h1>
+          <p class="text-xs text-slate-400 mt-1">VSEPR geometry matrices, transition metal coordination complexes, crystal field splitting, and 14 Bravais lattices.</p>
+        </div>
+        <a href="#/" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition no-underline">
+          ← Back to Table
+        </a>
+      </div>
+
+      <div id="inorganicArchiveContent" class="space-y-8">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+
+    <!-- iOS Install Helper Modal -->
+    <div id="iosInstallModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 hidden">
+      <div class="w-full max-w-sm rounded-xl bg-slate-900 border border-slate-700 p-6 shadow-2xl">
+        <h3 class="text-base font-bold text-white">Install ChemTable on iOS Safari</h3>
+        <p class="mt-2 text-xs text-slate-300 leading-relaxed">
+          1. Tap the <strong>Share</strong> icon in Safari's bottom toolbar.<br />
+          2. Scroll down and tap <strong>Add to Home Screen</strong>.<br />
+          3. Enjoy full offline access to all 118 elements and 3D molecular structures!
+        </p>
+        <button id="closeIOSModalBtn" class="mt-4 w-full rounded-lg bg-slate-800 hover:bg-slate-700 py-2 text-xs font-medium text-slate-200 transition">
+          Got It
+        </button>
+      </div>
+    </div>
+
+    <!-- Chem Tooltip -->
+    <div id="chemTooltip" class="chem-tooltip"></div>
+
+    <!-- Application Script -->
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

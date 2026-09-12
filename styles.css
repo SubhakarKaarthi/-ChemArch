@@ -1,0 +1,492 @@
+/* ChemTable: Academic Periodic Table & Chemistry Database Stylesheet */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg-primary: #070a12;
+  --bg-secondary: #0e1526;
+  --bg-card: #131c31;
+  --bg-card-hover: #1b2742;
+  --border-color: #1e293b;
+  --border-highlight: #334155;
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --cat-alkali-metal: #ef4444;
+  --cat-alkaline-earth: #f97316;
+  --cat-transition-metal: #eab308;
+  --cat-post-transition-metal: #10b981;
+  --cat-metalloid: #06b6d4;
+  --cat-reactive-nonmetal: #3b82f6;
+  --cat-noble-gas: #a855f7;
+  --cat-lanthanide: #ec4899;
+  --cat-actinide: #f43f5e;
+  --cat-unknown: #64748b;
+
+  --accent-cyan: #38bdf8;
+  --accent-indigo: #818cf8;
+  --accent-emerald: #34d399;
+  --accent-amber: #fbbf24;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+.navbar {
+  background: rgba(14, 21, 38, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.badge-alkali-metal { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+.badge-alkaline-earth { background: rgba(249, 115, 22, 0.15); color: #fdba74; border: 1px solid rgba(249, 115, 22, 0.4); }
+.badge-transition-metal { background: rgba(234, 179, 8, 0.15); color: #fde047; border: 1px solid rgba(234, 179, 8, 0.4); }
+.badge-post-transition-metal { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); }
+.badge-metalloid { background: rgba(6, 182, 212, 0.15); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.4); }
+.badge-reactive-nonmetal { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.4); }
+.badge-noble-gas { background: rgba(168, 85, 247, 0.15); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.4); }
+.badge-lanthanide { background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.4); }
+.badge-actinide { background: rgba(244, 63, 94, 0.15); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.4); }
+.badge-unknown { background: rgba(100, 116, 139, 0.15); color: #cbd5e1; border: 1px solid rgba(100, 116, 139, 0.4); }
+
+.periodic-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2rem;
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+}
+
+.periodic-table-grid {
+  display: grid;
+  grid-template-columns: repeat(18, minmax(68px, 1fr));
+  grid-template-rows: repeat(10, minmax(78px, auto));
+  gap: 4px;
+  min-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Touch Targets: WCAG 2.1 AA Target Size (Minimum 44px by 44px) */
+.element-cell,
+.element-tile {
+  min-width: 44px;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+button,
+.btn,
+.nav-link,
+.filter-state-btn,
+.filter-block-btn,
+.legend-chip,
+.compound-tab-btn,
+#resetTempBtn,
+#closeInspectorBtn,
+#pwaInstallBtn,
+#closeIOSModalBtn,
+#dossierPrevBtn,
+#dossierNextBtn {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+#clearSearchBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  min-height: 26px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.element-cell,
+.element-tile {
+  position: relative;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  color: inherit;
+}
+
+.element-cell:hover, 
+.element-cell:focus-visible,
+.element-tile:hover,
+.element-tile:focus-visible {
+  transform: translateY(-2px) scale(1.04);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 0 15px -3px rgba(56, 189, 248, 0.3);
+  z-index: 10;
+  outline: 2px solid #38bdf8 !important;
+  outline-offset: 2px !important;
+}
+
+/* Accessible keyboard focus for all interactive elements */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #38bdf8 !important;
+  outline-offset: 2px !important;
+}
+
+.element-cell.active-selected,
+.element-tile.active-selected {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.5);
+}
+
+.element-cell.dimmed,
+.element-tile.dimmed {
+  opacity: 0.18;
+  filter: grayscale(80%);
+  transform: none !important;
+  pointer-events: none;
+}
+
+.cell-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+
+.atomic-number {
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.state-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.state-dot.gas { background-color: #38bdf8; box-shadow: 0 0 6px #38bdf8; }
+.state-dot.liquid { background-color: #34d399; box-shadow: 0 0 6px #34d399; }
+.state-dot.solid { background-color: #94a3b8; }
+.state-dot.unknown { background-color: #475569; }
+
+.cell-symbol {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+.cell-footer {
+  text-align: center;
+  line-height: 1.1;
+}
+
+.cell-name {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.cell-weight {
+  font-size: 0.58rem;
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.element-cell[data-category="alkali-metal"] { border-top: 3px solid var(--cat-alkali-metal); }
+.element-cell[data-category="alkaline-earth"] { border-top: 3px solid var(--cat-alkaline-earth); }
+.element-cell[data-category="transition-metal"] { border-top: 3px solid var(--cat-transition-metal); }
+.element-cell[data-category="post-transition-metal"] { border-top: 3px solid var(--cat-post-transition-metal); }
+.element-cell[data-category="metalloid"] { border-top: 3px solid var(--cat-metalloid); }
+.element-cell[data-category="reactive-nonmetal"] { border-top: 3px solid var(--cat-reactive-nonmetal); }
+.element-cell[data-category="noble-gas"] { border-top: 3px solid var(--cat-noble-gas); }
+.element-cell[data-category="lanthanide"] { border-top: 3px solid var(--cat-lanthanide); }
+.element-cell[data-category="actinide"] { border-top: 3px solid var(--cat-actinide); }
+.element-cell[data-category="unknown"] { border-top: 3px solid var(--cat-unknown); }
+
+.placeholder-cell {
+  background: rgba(14, 21, 38, 0.4);
+  border: 1px dashed var(--border-color);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+.inspector-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+}
+
+.mol-viewer-container {
+  width: 100%;
+  height: 440px;
+  position: relative;
+  background: #060913;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.mol-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.bohr-canvas-container {
+  width: 100%;
+  height: 380px;
+  position: relative;
+  background: radial-gradient(circle at center, #111a33 0%, #060913 80%);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.chem-tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(19, 28, 49, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #fff;
+  font-size: 0.8rem;
+  z-index: 100;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  max-width: 260px;
+}
+
+/* Nav Tabs Active States */
+.nav-link {
+  transition: all 0.2s ease;
+  color: #94a3b8;
+  border-bottom: 2px solid transparent;
+}
+.nav-link:hover {
+  color: #f8fafc;
+}
+.nav-link.active {
+  color: #38bdf8;
+  border-bottom-color: #38bdf8;
+}
+
+/* Algorithmic SVG Structure Models */
+.lewis-model-box, .bohr-model-box {
+  background: #060913;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lewis-svg {
+  max-width: 220px;
+  max-height: 220px;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lewis-svg:hover {
+  transform: scale(1.05);
+}
+
+.bohr-svg {
+  max-width: 440px;
+  max-height: 440px;
+  width: 100%;
+}
+
+/* Table styling for isotopes and VSEPR */
+.chem-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.chem-table th {
+  background: #0d1527;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+.chem-table td {
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.6);
+}
+.chem-table tr:hover td {
+  background: rgba(30, 41, 59, 0.35);
+}
+
+/* 2D Compound Structure Fallback */
+.compound-fallback-box {
+  background: #090e1a;
+  border: 1px dashed var(--border-highlight);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Accessibility screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Responsive Architecture for Screens Under 1024px (Mobile & Tablets) */
+@media (max-width: 1023px) {
+  /* The Grid: Horizontal momentum scrolling on screens under 1024px */
+  .periodic-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    padding-bottom: 1.5rem;
+    scrollbar-width: thin;
+    overscroll-behavior-x: contain;
+    width: 100%;
+    margin: 0;
+    border-radius: 8px;
+  }
+
+  .periodic-table-grid {
+    min-width: 1120px;
+    grid-template-columns: repeat(18, minmax(58px, 1fr));
+    grid-template-rows: repeat(10, minmax(66px, auto));
+    gap: 3px;
+  }
+
+  .element-cell,
+  .element-tile {
+    min-width: 58px;
+    min-height: 66px;
+    padding: 3px 4px;
+  }
+
+  .cell-symbol {
+    font-size: 1.15rem;
+  }
+
+  .cell-name {
+    font-size: 0.58rem;
+  }
+
+  .cell-weight {
+    font-size: 0.54rem;
+  }
+
+  /* The Dossier: Collapse from side-by-side to stacked single-column layout on mobile */
+  .dossier-collapse-grid,
+  #dossierContent section,
+  #dossierContent .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  #dossierContent .lg\:col-span-4,
+  #dossierContent .lg\:col-span-8,
+  #dossierContent .lg\:col-span-5,
+  #dossierContent .lg\:col-span-7,
+  #dossierContent .lg\:col-span-12 {
+    grid-column: span 1 / span 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Quick Element Inspector Drawer on mobile: bottom anchored */
+  #inspectorDrawer {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: calc(100vw - 2rem);
+  }
+}
+

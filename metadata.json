@@ -1,0 +1,6 @@
+{
+  "name": "Periodic Table & Chemistry Database",
+  "description": "Academic, scientific PWA featuring an interactive Periodic Table, 3D molecular visualization, IUPAC data, and compound database.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

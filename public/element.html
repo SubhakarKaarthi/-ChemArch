@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Element Dossier & 3D Lab | IUPAC Chemistry Database</title>
+    <meta name="description" content="Detailed academic profile, 3D Bohr atom simulation, physical properties, and 3D molecular structures." />
+    <meta property="og:title" content="Element Dossier & 3D Lab" />
+    <meta property="og:description" content="Detailed academic profile, 3D Bohr atom simulation, physical properties, and 3D molecular structures." />
+    <meta name="theme-color" content="#0b0f19" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.4.2/3Dmol-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  </head>
+  <body class="bg-[#070a12] text-slate-100 antialiased min-h-screen flex flex-col">
+    <header class="navbar px-4 lg:px-8 py-3 flex items-center justify-between gap-4 border-b border-slate-800 bg-[#0c1222]/95 sticky top-0 z-40">
+      <div class="flex items-center gap-3">
+        <a href="/" class="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700/80 transition no-underline shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          Periodic Table
+        </a>
+        <span class="text-slate-600 hidden sm:inline">|</span>
+        <div class="flex items-center gap-1">
+          <button id="navPrevBtn" class="px-2.5 py-1 text-xs rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 transition" title="Previous element (Left Arrow)">
+            ← Prev
+          </button>
+          <button id="navNextBtn" class="px-2.5 py-1 text-xs rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 transition" title="Next element (Right Arrow)">
+            Next →
+          </button>
+        </div>
+      </div>
+
+      <div class="hidden md:flex items-center gap-2 text-xs text-slate-400">
+        <span>IUPAC Academic Reference</span>
+        <span>•</span>
+        <span id="navElementBreadcrumb" class="font-mono font-semibold text-cyan-400">Carbon (C - Z=6)</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="pwaInstallBtn" class="hidden items-center gap-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-white shadow transition">
+          Install App
+        </button>
+        <button onclick="window.print()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs border border-slate-700 transition" title="Print academic report">
+          🖨 Print Dossier
+        </button>
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 lg:p-8 max-w-7xl mx-auto w-full space-y-8">
+      <!-- HERO & 3D BOHR ATOM -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-[#0c1324] border border-slate-800/80 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+        <div class="lg:col-span-5 flex flex-col justify-between space-y-5">
+          <div>
+            <div class="flex items-center justify-between">
+              <span id="heroCategoryBadge" class="badge-reactive-nonmetal text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                Reactive Nonmetal
+              </span>
+              <div class="flex items-center gap-2">
+                <span id="heroRadioactiveBadge" class="hidden px-2 py-0.5 rounded text-[11px] font-semibold bg-red-950/80 text-red-400 border border-red-800/60">
+                  ☢ Radioactive
+                </span>
+                <span id="heroBlockBadge" class="px-2 py-0.5 rounded text-[11px] font-mono bg-slate-800 text-cyan-300 border border-slate-700">
+                  p-block
+                </span>
+              </div>
+            </div>
+
+            <div class="mt-4 p-5 rounded-xl bg-[#101930] border border-slate-700/60 shadow-inner flex items-center justify-between">
+              <div>
+                <div class="font-mono text-slate-400 text-sm font-semibold tracking-wider">Z = <span id="heroAtomicNumber" class="text-white text-lg">6</span></div>
+                <div id="heroSymbol" class="text-6xl sm:text-7xl font-extrabold tracking-tighter text-cyan-300 my-1 font-mono">C</div>
+                <div id="heroName" class="text-2xl font-bold text-white">Carbon</div>
+              </div>
+              <div class="text-right font-mono space-y-1">
+                <div class="text-xs text-slate-400">Standard Atomic Weight</div>
+                <div id="heroAtomicMass" class="text-xl font-bold text-amber-300">12.011</div>
+                <div class="text-[11px] text-slate-400 mt-2">Period <span id="heroPeriod" class="text-white font-bold">2</span>, Group <span id="heroGroup" class="text-white font-bold">14</span></div>
+                <div class="text-[11px] text-slate-400">State: <span id="heroState" class="text-cyan-300 font-bold capitalize">Solid</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-xs bg-slate-900/70 p-3.5 rounded-xl border border-slate-800">
+            <div>
+              <span class="text-slate-400 block mb-1">Electron Shells (K, L, M...):</span>
+              <span id="heroShells" class="font-mono font-bold text-cyan-300 text-sm">2, 4</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block mb-1">Discovery:</span>
+              <span id="heroDiscovery" class="text-slate-200 font-medium">Antiquity</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 flex flex-col justify-between space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+              <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider m-0">3D Quantum Bohr Atom Simulation</h3>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs">
+              <button id="bohrViewModeBtn" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition">
+                Orbital Rings
+              </button>
+              <button id="bohrPauseBtn" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+                Pause
+              </button>
+              <button id="bohrResetBtn" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+                Reset
+              </button>
+            </div>
+          </div>
+
+          <div id="bohrContainer" class="bohr-canvas-container relative cursor-grab active:cursor-grabbing">
+            <div class="absolute bottom-3 left-3 px-2 py-1 rounded bg-slate-950/80 backdrop-blur border border-slate-800 text-[10px] text-slate-400 font-mono">
+              Rotate: Drag | Zoom: Scroll
+            </div>
+            <div id="bohrNucleusStats" class="absolute top-3 right-3 px-2.5 py-1 rounded bg-slate-950/80 backdrop-blur border border-slate-800 text-[11px] text-cyan-300 font-mono">
+              Protons: 6 | Electrons: 6
+            </div>
+          </div>
+
+          <p class="text-xs text-slate-400 m-0">
+            Interactive visual representation of the atom's nuclear core surrounded by principal quantum energy levels (<span class="font-mono">n = 1, 2, 3...</span>) and circulating valence electrons.
+          </p>
+        </div>
+      </section>
+
+      <!-- QUANTUM MECHANICS & QUICK FACTS -->
+      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-[#0c1324] border border-slate-800/80 rounded-xl p-5 space-y-4 shadow-lg">
+          <div class="flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+            <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider m-0">Electron Configuration</h3>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <span class="text-xs text-slate-400 block mb-1">Condensed (Noble Gas Core):</span>
+              <div id="factConfigCondensed" class="p-2.5 rounded-lg bg-slate-900 border border-slate-800 font-mono text-cyan-300 text-sm font-semibold">
+                [He] 2s² 2p²
+              </div>
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 block mb-1">Expanded Quantum State:</span>
+              <div id="factConfigExpanded" class="p-2.5 rounded-lg bg-slate-900 border border-slate-800 font-mono text-slate-200 text-xs break-all">
+                1s² 2s² 2p_x¹ 2p_y¹
+              </div>
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 block mb-1">Oxidation States:</span>
+              <div id="factOxidationStates" class="flex flex-wrap gap-1.5"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-[#0c1324] border border-slate-800/80 rounded-xl p-5 space-y-4 shadow-lg">
+          <div class="flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+            </svg>
+            <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider m-0">Periodic Trends & Energy</h3>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-400">Electronegativity (Pauling):</span>
+                <span id="factEnegValue" class="font-mono font-bold text-cyan-300">2.55</span>
+              </div>
+              <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                <div id="factEnegBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full transition-all duration-500" style="width: 63%"></div>
+              </div>
+              <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
+                <span>0.7 (Fr)</span>
+                <span>4.0 (F)</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-400">1st Ionization Energy:</span>
+                <span id="factIonization" class="font-mono font-bold text-amber-300">1086.5 kJ/mol</span>
+              </div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div id="factIonBar" class="bg-amber-400 h-full rounded-full" style="width: 45%"></div>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800/80 flex justify-between items-center text-xs">
+              <span class="text-slate-400">Empirical Atomic Radius:</span>
+              <span id="factAtomicRadius" class="font-mono font-bold text-white">70 pm</span>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-slate-400">Crystal Lattice Structure:</span>
+              <span id="factCrystal" class="text-slate-200 font-medium">Diamond / Hexagonal</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-[#0c1324] border border-slate-800/80 rounded-xl p-5 space-y-4 shadow-lg md:col-span-2 lg:col-span-1">
+          <div class="flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" stroke-width="2"/>
+              <path stroke-linecap="round" stroke-width="2" d="M12 7v5l3 3"/>
+            </svg>
+            <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider m-0">Key Isotopes</h3>
+          </div>
+
+          <div class="overflow-x-auto max-h-48">
+            <table class="w-full text-left text-xs font-mono">
+              <thead>
+                <tr class="text-slate-400 border-b border-slate-800">
+                  <th class="pb-1">Nuclide</th>
+                  <th class="pb-1">Mass (u)</th>
+                  <th class="pb-1">Abundance</th>
+                  <th class="pb-1">Half-life</th>
+                </tr>
+              </thead>
+              <tbody id="factIsotopesBody" class="divide-y divide-slate-800/50 text-slate-300"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- PHYSICAL & THERMODYNAMIC PROPERTIES -->
+      <section class="bg-[#0c1324] border border-slate-800/80 rounded-xl p-6 shadow-xl space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider m-0">Physical & Thermodynamic Properties</h3>
+          </div>
+          <span class="text-xs text-slate-500">IUPAC Standard Temperature & Pressure (298.15 K, 100 kPa)</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-xs">
+          <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+            <span class="text-slate-400 block mb-1">State at STP</span>
+            <strong id="propStateSTP" class="text-white text-sm capitalize">Solid</strong>
+          </div>
+          <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+            <span class="text-slate-400 block mb-1">Melting Point</span>
+            <strong id="propMeltingPoint" class="text-cyan-300 font-mono text-sm">3823 K (3550 °C)</strong>
+          </div>
+          <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+            <span class="text-slate-400 block mb-1">Boiling Point</span>
+            <strong id="propBoilingPoint" class="text-cyan-300 font-mono text-sm">4098 K (3825 °C)</strong>
+          </div>
+          <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+            <span class="text-slate-400 block mb-1">Density</span>
+            <strong id="propDensity" class="text-white font-mono text-sm">2.267 g/cm³</strong>
+          </div>
+          <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+            <span class="text-slate-400 block mb-1">Atomic Radius</span>
+            <strong id="propRadius" class="text-white font-mono text-sm">70 pm</strong>
+          </div>
+          <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+            <span class="text-slate-400 block mb-1">Discoverer</span>
+            <strong id="propDiscoverer" class="text-slate-200 text-sm truncate block">Antiquity</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3D INTERACTIVE COMPOUND DATABASE -->
+      <section class="bg-[#0c1324] border border-cyan-500/30 rounded-2xl p-6 shadow-2xl space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-950 text-cyan-400 border border-cyan-800">3Dmol.js WebGL</span>
+              <h2 class="text-lg font-bold text-white m-0">Compound Database & 3D Spatial Structures</h2>
+            </div>
+            <p class="text-xs text-slate-400 mt-1 m-0">
+              Interactive molecular conformations, bonding characteristics, and IUPAC chemical profiles.
+            </p>
+          </div>
+
+          <div id="compoundTabsContainer" class="flex flex-wrap items-center gap-2"></div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-7 flex flex-col space-y-3">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-mono text-slate-400">Interactive 3D Spatial Model</span>
+              <div class="flex items-center gap-1.5">
+                <button data-style="stick" class="mol-style-btn px-2.5 py-1 rounded bg-cyan-600 text-white font-medium transition">
+                  Ball & Stick
+                </button>
+                <button data-style="sphere" class="mol-style-btn px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition">
+                  Space-Filling (VDW)
+                </button>
+                <button data-style="line" class="mol-style-btn px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition">
+                  Wireframe
+                </button>
+                <button id="molAutoRotateBtn" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition">
+                  Spin: ON
+                </button>
+                <button id="molResetCameraBtn" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Reset View">
+                  ⟲
+                </button>
+              </div>
+            </div>
+
+            <div id="molViewerContainer" class="mol-viewer-container relative">
+              <div id="mol3dViewer" class="mol-canvas"></div>
+              
+              <div class="absolute top-3 left-3 bg-slate-950/85 backdrop-blur border border-slate-800 px-3 py-1.5 rounded-lg pointer-events-none">
+                <span id="molFloatingFormula" class="font-mono text-base font-extrabold text-cyan-300">CH<sub>4</sub></span>
+                <span id="molFloatingName" class="block text-[11px] text-slate-400">Methane</span>
+              </div>
+
+              <div class="absolute bottom-3 right-3 bg-slate-950/85 backdrop-blur border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-3 text-[10px] font-mono text-slate-300 pointer-events-none">
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#909090]"></span> C</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ffffff]"></span> H</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ff0d0d]"></span> O</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#3050f8]"></span> N</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ab5cf2]"></span> Na</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#1ff01f]"></span> Cl</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-[11px] text-slate-500">
+              <span>Left-click: Rotate | Right-click: Pan | Wheel: Zoom</span>
+              <span id="molGeometryLabel" class="font-mono text-cyan-400 font-semibold">Geometry: Tetrahedral</span>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 bg-slate-900/90 border border-slate-800 rounded-xl p-5 space-y-4">
+            <div>
+              <div class="flex items-center justify-between">
+                <span id="cmpTypeBadge" class="px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-emerald-950 text-emerald-400 border border-emerald-800">
+                  Organic Compound
+                </span>
+                <span id="cmpMolarMass" class="font-mono font-bold text-amber-300 text-xs">16.043 g/mol</span>
+              </div>
+              <h3 id="cmpIupacName" class="text-base font-bold text-white mt-2 m-0">Methane</h3>
+              <p id="cmpCommonName" class="text-xs text-slate-400 m-0">Common: Natural gas / Marsh gas</p>
+            </div>
+
+            <div class="space-y-2 border-t border-b border-slate-800 py-3 text-xs">
+              <h4 class="text-slate-400 font-semibold uppercase tracking-wider text-[11px]">Bonding Characteristics</h4>
+              <div class="grid grid-cols-2 gap-2 text-slate-300">
+                <div>Bonding Type: <strong id="cmpBondType" class="text-white block font-medium">Pure Covalent</strong></div>
+                <div>Ionic Character: <strong id="cmpIonicPct" class="text-white block font-medium">9%</strong></div>
+                <div>Bond Angles: <strong id="cmpBondAngles" class="text-cyan-300 block font-mono">109.5°</strong></div>
+                <div>Dipole Moment: <strong id="cmpDipole" class="text-white block font-mono">0.0 D (Nonpolar)</strong></div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+              <div class="p-2 bg-slate-950/60 rounded border border-slate-800/80">
+                <span class="text-slate-400 block text-[10px]">State at STP</span>
+                <strong id="cmpState" class="text-slate-200">Gas</strong>
+              </div>
+              <div class="p-2 bg-slate-950/60 rounded border border-slate-800/80">
+                <span class="text-slate-400 block text-[10px]">Melting Point</span>
+                <strong id="cmpMelting" class="text-cyan-300 font-mono">-182.5 °C</strong>
+              </div>
+              <div class="p-2 bg-slate-950/60 rounded border border-slate-800/80">
+                <span class="text-slate-400 block text-[10px]">Boiling Point</span>
+                <strong id="cmpBoiling" class="text-cyan-300 font-mono">-161.5 °C</strong>
+              </div>
+            </div>
+
+            <div class="space-y-1.5 text-xs">
+              <h4 class="text-slate-400 font-semibold uppercase tracking-wider text-[11px]">Industrial & Biological Applications</h4>
+              <ul id="cmpApplicationsList" class="space-y-1 list-disc list-inside text-slate-300 pl-1"></ul>
+            </div>
+
+            <div class="p-3 bg-red-950/30 border border-red-900/50 rounded-lg text-xs">
+              <span class="text-red-400 font-bold block mb-0.5">⚠️ Chemical Safety:</span>
+              <span id="cmpSafetyText" class="text-red-200/90 leading-relaxed">
+                Extremely flammable gas. Asphyxiant in high concentrations.
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="mt-12 py-6 border-t border-slate-800/80 bg-[#070b14] text-center text-xs text-slate-500">
+      <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <span>© 2026 IUPAC Academic Periodic Table & Chemistry Database.</span>
+        <span>Strict adherence to IUPAC Nomenclature & Standard Atomic Weights.</span>
+      </div>
+    </footer>
+
+    <script src="/element-renderer.js"></script>
+  </body>
+</html>
